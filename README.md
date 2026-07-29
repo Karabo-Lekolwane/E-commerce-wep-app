@@ -23,4 +23,4 @@ The app also have email authentcation and it gives updates whenever a user updat
 
 
 
-Link to web-app: kr-web-app.infinityfreeapp.com
+Link to web-app: kr-web-app.infinityfreeapp.com  NB!!! - the web-app link is currently being fixed
