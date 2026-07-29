@@ -20,3 +20,7 @@ This is a PHP-based e-commerce platform currently under development by KR's Tech
 - **XAMPP**: Local development environment
 
 The app also have email authentcation and it gives updates whenever a user updates the payment mehtod or account details
+
+
+
+Link to web-app: kr-web-app.infinityfreeapp.com
