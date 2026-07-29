@@ -16,3 +16,5 @@ This is a PHP-based e-commerce platform currently under development by KR's Tech
 - **Node.js**: Frontend tooling (if applicable)
 - **Playwright and Selenium**: Automation testing
 - **XAMPP**: Local development environment
+
+The app also have email authentcation and it gives updates whenever a user updates the payment mehtod or account details
