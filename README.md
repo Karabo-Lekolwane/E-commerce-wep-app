@@ -7,6 +7,8 @@ This is a PHP-based e-commerce platform currently under development by KR's Tech
 - Files and dependencies are disorganized and require restructuring.
 - XAMPP is being used as the local development environment.
 - Automation test scripts are under development.
+- PHP,CSS,Html and java script code is mixed in single files
+- The passwords in the database is hashed
 
 ## Technologies Used
 - **PHP**: Server-side scripting
