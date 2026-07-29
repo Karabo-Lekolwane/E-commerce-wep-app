@@ -1,0 +1,542 @@
+<?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+session_start();
+
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "ecommerse";
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - KR's Tech</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Base styles */
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #95a5a6;
+            --secondary-dark: #7f8c8d;
+            --card-bg: #fff;
+            --card-border: #ebebeb;
+            --gray: #8e9196;
+            --background: #f5f5f5;
+            --nav-bg: #2c3e50;
+            --nav-link-hover: #3498db;
+            --success: #d4edda;
+            --success-border: #c3e6cb;
+            --success-text: #155724;
+            --danger: #f8d7da;
+            --danger-border: #f5c6cb;
+            --danger-text: #721c24;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .logo span {
+            color: #3498db;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 20px;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: #3498db;
+        }
+        
+        .breadcrumbs {
+            margin: 20px 0;
+            color: #7f8c8d;
+        }
+        
+        .breadcrumbs a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 36px;
+            color: #2c3e50;
+            position: relative;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #3498db;
+        }
+        
+        .about-content {
+            margin: 50px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .about-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .about-text h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .about-text p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        
+        .team-section {
+            margin: 60px 0;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .team-member {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+        
+        .team-member img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .team-info {
+            padding: 20px;
+        }
+        
+        .team-name {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .team-role {
+            color: #3498db;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        
+        .mission-section {
+            background-color: #fff;
+            padding: 60px 0;
+            margin: 60px 0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+        
+        .mission-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .mission-content h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .mission-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        
+        .values-section {
+            margin: 60px 0;
+        }
+        
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .value-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .value-icon {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+        
+        .value-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        /* Footer styles */
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column ul li a:hover {
+            color: #3498db;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #34495e;
+        }
+        
+        .cart-count {
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+                justify-content: center;
+            }
+            
+            nav ul li {
+                margin: 0 10px;
+            }
+            
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-image {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">KR's<span>Tech</span></div>
+                <nav>
+                    <ul>
+                        <li><a href="index.php">Home</a></li>
+                        <li><a href="products.php">Products</a></li>
+                        <li>
+                            <a href="cart.php">
+                                <i class="fas fa-shopping-cart"></i>
+                                Cart <span id="cart-count" class="cart-count">0</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="account.php">
+                                <i class="fas fa-user"></i>
+                                Account
+                            </a>
+                        </li>
+                        <li><a href="contact.php">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumbs">
+            <a href="index.php">Home</a>
+            / About Us
+        </div>
+        
+        <h1 class="page-title">About KR's Tech</h1>
+        
+        <section class="about-content">
+            <div class="about-text">
+                <h2>Our Story</h2>
+                <p>Founded in 2025, KR's Tech began with a simple mission: to provide cutting-edge technology solutions at affordable prices. What started as a small online store has grown into one of the most trusted tech retailers in the region.</p>
+                <p>Our founder, Karabo Lekolwane, a passionate technologist, saw a need for a tech store that not only sold products but also educated customers and provided exceptional after-sales support. With a small inventory and big dreams, KR's Tech was born in a garage with just three employees.</p>
+                <p>Today, we continue to operate with the same passion and commitment to serving our customers, offering carefully curated selections of the latest gadgets, computers, and tech accessories from leading brands around the world.</p>
+            </div>
+            <img src="images\IMG-20250423-WA0005.jpg" alt="Tech office" class="about-image">
+        </section>
+        
+        <section class="mission-section">
+            <div class="mission-content">
+                <h2>Our Mission</h2>
+                <p>At KR's Tech, our mission is to bridge the gap between technology and people. We believe that technology should be accessible, understandable, and beneficial to everyone, regardless of their technical expertise.</p>
+                <p>We are committed to offering quality tech products at competitive prices, providing exceptional customer service, and fostering a community of tech enthusiasts. Our team of experts is always ready to help you find the perfect tech solution for your needs.</p>
+            </div>
+        </section>
+        
+        <section class="values-section">
+            <h2 class="page-title">Our Core Values</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h3 class="value-title">Customer First</h3>
+                    <p>We prioritize our customers' needs above all else, ensuring they get the best products and support.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="value-title">Innovation</h3>
+                    <p>We constantly seek out the latest technologies to bring you cutting-edge solutions.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="value-title">Integrity</h3>
+                    <p>We conduct our business with honesty and transparency, building trust with every interaction.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="team-section">
+            <h2 class="page-title">Meet Our Team</h2>
+            <div class="team-grid">
+            <div class="team-member">
+                    
+                    <img src="images\WhatsApp Image 2025-04-23 at 11.16.10_59852cb7.jpg" alt="Karabo Lekolwane KR">
+                    <div class="team-info">
+                        <h3 class="team-name">Karabo Lekolwane KR</h3>
+                        <p class="team-role">Founder & CEO</p>
+                        <p>KR makes decisions about the company's day-to-day needs and is responsible for significant business decisions</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80" alt="Kevin Reynolds">
+                    <div class="team-info">
+                        <h3 class="team-name">Kevin Reynolds</h3>
+                        <p class="team-role">CFO and Manager</p>
+                        <p>With a background in computer engineering and a passion for technology, Kevin leads KR's Tech with vision and dedication.</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80" alt="Sarah Johnson">
+                    <div class="team-info">
+                        <h3 class="team-name">Sarah Johnson</h3>
+                        <p class="team-role">Chief Technology Officer</p>
+                        <p>Sarah ensures we stay at the forefront of technology trends and maintain the highest technical standards.</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80" alt="Michael Chen">
+                    <div class="team-info">
+                        <h3 class="team-name">Michael Chen</h3>
+                        <p class="team-role">Customer Experience Manager</p>
+                        <p>Michael and his team ensure every customer has an exceptional experience with KR's Tech.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>KR's Tech</h3>
+                    <ul>
+                        <li><a href="about.php">About Us</a></li>
+                        <li><a href="contact.php">Contact Us</a></li>
+                        <li><a href="blog.php">Blog</a></li>
+                        <li><a href="careers.php">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="faq.php">FAQ</a></li>
+                        <li><a href="shipping.php">Shipping Policy</a></li>
+                        <li><a href="returns.php">Returns & Exchanges</a></li>
+                        <li><a href="terms.php">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>My Account</h3>
+                    <ul>
+                        <li><a href="account.php">Account</a></li>
+                        <li><a href="orders.php">Order History</a></li>
+                        <li><a href="wishlist.php">Wishlist</a></li>
+                        <li><a href="newsletter.php">Newsletter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Connect With Us</h3>
+                    <ul>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">YouTube</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 KR's Tech. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Function to update cart count
+    function updateCartCount() {
+        fetch('get_cart_count.php')
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('cart-count').textContent = data.count;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Update cart count on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartCount();
+    });
+    </script>
+</body>
+</html>
+
+<?php
+$conn->close();
+?>
+

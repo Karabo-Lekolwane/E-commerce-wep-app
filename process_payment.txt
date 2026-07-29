@@ -1,0 +1,71 @@
+<?php
+session_start();
+require 'vendor/autoload.php'; // Require PayPal SDK
+
+// Database connection
+$servername = "sql207.infinityfree.com";
+$username = "if0_38801864";
+$password = "1984Testing";
+$dbname = "if0_38801864_ecommerce";
+$conn = new mysqli($servername, $username, $password_db, $dbname);
+
+if ($conn->connect_error) {
+    die(json_encode(['success' => false, 'message' => 'Database connection failed']));
+}
+
+// Get POST data
+$data = json_decode(file_get_contents('php://input'), true);
+
+// Verify PayPal payment
+$clientId = 'YOUR_CLIENT_ID'; // Replace with your actual client ID
+$clientSecret = 'YOUR_SECRET'; // Replace with your actual secret
+
+$environment = new \PayPalCheckoutSdk\Core\SandboxEnvironment($clientId, $clientSecret);
+// For production: new \PayPalCheckoutSdk\Core\ProductionEnvironment($clientId, $clientSecret)
+$client = new \PayPalCheckoutSdk\Core\PayPalHttpClient($environment);
+
+try {
+    // Verify the payment
+    $request = new \PayPalCheckoutSdk\Orders\OrdersGetRequest($data['orderID']);
+    $response = $client->execute($request);
+    
+    if ($response->result->status !== 'COMPLETED') {
+        throw new Exception('Payment not completed');
+    }
+
+    // Save order to database
+    $invoice_id = $data['invoiceID'];
+    $user_id = $_SESSION['user_id'];
+    $amount = $data['amount'];
+    $status = 'completed';
+    $payment_method = 'paypal';
+    $items = json_encode($data['cart']);
+
+    $sql = "INSERT INTO orders (invoice_id, user_id, amount, status, payment_method, items) 
+            VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sidsis", $invoice_id, $user_id, $amount, $status, $payment_method, $items);
+    $stmt->execute();
+    $order_id = $conn->insert_id;
+    $stmt->close();
+
+    // Clear the cart
+    $_SESSION['cart'] = [];
+
+    // Return success response
+    echo json_encode([
+        'success' => true,
+        'order_id' => $order_id,
+        'invoice_id' => $invoice_id
+    ]);
+
+} catch (Exception $e) {
+    error_log('Payment processing error: ' . $e->getMessage());
+    echo json_encode([
+        'success' => false,
+        'message' => 'Payment processing failed: ' . $e->getMessage()
+    ]);
+}
+
+$conn->close();
+?>

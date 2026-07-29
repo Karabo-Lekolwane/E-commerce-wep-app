@@ -1,0 +1,14 @@
+<?php
+session_start();
+header('Content-Type: application/json');
+
+$count = 0;
+if(isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    // Calculate total quantity if your cart stores quantities
+    $count = array_sum(array_column($_SESSION['cart'], 'quantity')); 
+    // OR use this if you just store products without quantities:
+    // $count = count($_SESSION['cart']);
+}
+
+echo json_encode(['success' => true, 'count' => $count]);
+?>
